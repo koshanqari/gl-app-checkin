@@ -384,13 +384,19 @@ export default function IntellsysPage() {
                   {({ fieldProps }) => (
                     <TextField
                       {...fieldProps}
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={currentCheckIn.empMobileNo || ''}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const value = e.target.value;
+                        // Only allow numbers
+                        const numericValue = value.replace(/\D/g, '');
                         setCurrentCheckIn({
                           ...currentCheckIn,
-                          empMobileNo: e.target.value,
-                        })
-                      }
+                          empMobileNo: numericValue,
+                        });
+                      }}
                     />
                   )}
                 </Field>

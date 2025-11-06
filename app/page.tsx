@@ -34,6 +34,13 @@ function HomeContent() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow numbers
+    const numericValue = value.replace(/\D/g, '');
+    handleInputChange('empMobileNo', numericValue);
+  };
+
   const incrementCounter = (field: 'kidsBelow3Feet' | 'membersAbove3Feet') => {
     setFormData((prev) => ({ ...prev, [field]: prev[field] + 1 }));
   };
@@ -138,10 +145,10 @@ function HomeContent() {
                   <TextField
                     {...fieldProps}
                     type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={formData.empMobileNo}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange('empMobileNo', e.target.value)
-                    }
+                    onChange={handleMobileChange}
                     placeholder="Enter Mobile Number"
                   />
                 )}
@@ -185,7 +192,7 @@ function HomeContent() {
                   >
                     -
                   </Button>
-                  <span className="text-2xl font-semibold w-16 text-center">
+                  <span className="text-2xl font-semibold w-16 text-center text-gray-900">
                     {formData.kidsBelow3Feet}
                   </span>
                   <Button
@@ -210,7 +217,7 @@ function HomeContent() {
                   >
                     -
                   </Button>
-                  <span className="text-2xl font-semibold w-16 text-center">
+                  <span className="text-2xl font-semibold w-16 text-center text-gray-900">
                     {formData.membersAbove3Feet}
                   </span>
                   <Button
