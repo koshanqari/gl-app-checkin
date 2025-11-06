@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         clientName: body.clientName,
         projectName: body.projectName,
         activityName: body.activityName,
+        present: body.present || false,
       },
     });
 

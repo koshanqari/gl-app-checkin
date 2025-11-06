@@ -24,6 +24,7 @@ interface CheckIn {
   clientName: string | null;
   projectName: string | null;
   activityName: string | null;
+  present: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -205,6 +206,19 @@ export default function IntellsysPage() {
     router.push('/intellsys/login');
   };
 
+  const handleTogglePresent = async (id: number, currentPresent: boolean) => {
+    try {
+      await fetch(`/api/checkins/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ present: !currentPresent }),
+      });
+      fetchCheckIns();
+    } catch (error) {
+      console.error('Error updating present status:', error);
+    }
+  };
+
   const downloadCSV = () => {
     // Define CSV headers
     const headers = [
@@ -219,6 +233,7 @@ export default function IntellsysPage() {
       'Client Name',
       'Project Name',
       'Activity Name',
+      'Present',
       'Created At',
     ];
 
@@ -238,6 +253,7 @@ export default function IntellsysPage() {
           `"${checkIn.clientName || ''}"`,
           `"${checkIn.projectName || ''}"`,
           `"${checkIn.activityName || ''}"`,
+          checkIn.present ? 'Yes' : 'No',
           `"${new Date(checkIn.createdAt).toLocaleString()}"`,
         ].join(',')
       ),
@@ -262,6 +278,7 @@ export default function IntellsysPage() {
 
   const head = {
     cells: [
+      { key: 'present', content: 'Present', isSortable: false },
       { key: 'srNo', content: 'Sr. No', isSortable: true },
       { key: 'empId', content: 'Emp ID', isSortable: true },
       { key: 'empName', content: 'Name', isSortable: true },
@@ -280,6 +297,17 @@ export default function IntellsysPage() {
   const rows = filteredCheckIns.map((checkIn) => ({
     key: `row-${checkIn.id}`,
     cells: [
+      {
+        key: `present-${checkIn.id}`,
+        content: (
+          <input
+            type="checkbox"
+            checked={checkIn.present || false}
+            onChange={() => handleTogglePresent(checkIn.id, checkIn.present || false)}
+            className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+          />
+        ),
+      },
       { key: `srNo-${checkIn.id}`, content: checkIn.srNo },
       { key: `empId-${checkIn.id}`, content: checkIn.empId },
       { key: `empName-${checkIn.id}`, content: checkIn.empName },

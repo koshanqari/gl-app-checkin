@@ -26,6 +26,7 @@ model CheckIn {
   clientName      String?
   projectName     String?
   activityName    String?
+  present         Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

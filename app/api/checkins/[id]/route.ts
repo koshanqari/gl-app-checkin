@@ -38,20 +38,25 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
+    // If only present field is being updated, do a partial update
+    const updateData: any = {};
+    if (body.present !== undefined) {
+      updateData.present = body.present;
+    }
+    if (body.empId !== undefined) updateData.empId = body.empId;
+    if (body.empName !== undefined) updateData.empName = body.empName;
+    if (body.empMobileNo !== undefined) updateData.empMobileNo = body.empMobileNo;
+    if (body.department !== undefined) updateData.department = body.department;
+    if (body.location !== undefined) updateData.location = body.location;
+    if (body.kidsBelow3Feet !== undefined) updateData.kidsBelow3Feet = body.kidsBelow3Feet;
+    if (body.membersAbove3Feet !== undefined) updateData.membersAbove3Feet = body.membersAbove3Feet;
+    if (body.clientName !== undefined) updateData.clientName = body.clientName;
+    if (body.projectName !== undefined) updateData.projectName = body.projectName;
+    if (body.activityName !== undefined) updateData.activityName = body.activityName;
+
     const checkIn = await prisma.checkIn.update({
       where: { id: parseInt(id) },
-      data: {
-        empId: body.empId,
-        empName: body.empName,
-        empMobileNo: body.empMobileNo,
-        department: body.department,
-        location: body.location,
-        kidsBelow3Feet: body.kidsBelow3Feet,
-        membersAbove3Feet: body.membersAbove3Feet,
-        clientName: body.clientName,
-        projectName: body.projectName,
-        activityName: body.activityName,
-      },
+      data: updateData,
     });
 
     return NextResponse.json(checkIn);

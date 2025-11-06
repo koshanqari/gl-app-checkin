@@ -108,9 +108,13 @@ function HomeContent() {
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Golden Lotus
-            </h1>
+            <div className="mb-4 flex justify-center">
+              <img 
+                src="https://golden-lotus-prod.b-cdn.net/homepage/clientlogos/fedx1.png" 
+                alt="Golden Lotus Logo" 
+                className="h-20 w-auto object-contain"
+              />
+            </div>
             <h2 className="text-2xl font-semibold text-amber-600">
               Employee Check-In
             </h2>
