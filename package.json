@@ -6,21 +6,41 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "db:push": "prisma db push",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@atlaskit/button": "^23.5.4",
+    "@atlaskit/dynamic-table": "^18.3.4",
+    "@atlaskit/form": "^14.2.4",
+    "@atlaskit/icon": "^28.5.3",
+    "@atlaskit/lozenge": "^13.0.15",
+    "@atlaskit/modal-dialog": "^14.6.0",
+    "@atlaskit/page": "^14.0.1",
+    "@atlaskit/select": "^21.3.8",
+    "@atlaskit/spinner": "^19.0.6",
+    "@atlaskit/textfield": "^8.0.14",
+    "@prisma/client": "^6.19.0",
+    "@tanstack/react-query": "^5.90.7",
+    "dotenv": "^17.2.3",
+    "next": "16.0.1",
+    "prisma": "^6.19.0",
     "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "next": "16.0.1"
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "16.0.1"
+    "eslint-config-next": "16.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
