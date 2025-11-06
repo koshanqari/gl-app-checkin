@@ -57,6 +57,7 @@ export default function IntellsysPage() {
 
   useEffect(() => {
     filterAndSortCheckIns();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIns, searchTerm, sortField, sortOrder]);
 
   const fetchCheckIns = async () => {

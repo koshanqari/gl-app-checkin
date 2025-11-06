@@ -8,6 +8,7 @@ import { Field } from '@atlaskit/form';
 
 function HomeContent() {
   const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
   
   const [formData, setFormData] = useState({
     empId: '',
@@ -24,6 +25,10 @@ function HomeContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -79,6 +84,17 @@ function HomeContent() {
       setIsSubmitting(false);
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100 py-12 px-4 sm:px-6 lg:px-8">
