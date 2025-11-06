@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@atlaskit/button';
 import TextField from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
 import { Field } from '@atlaskit/form';
+import RefreshIcon from '@atlaskit/icon/glyph/refresh';
+import DownloadIcon from '@atlaskit/icon/glyph/download';
 import { CustomTable } from './components/CustomTable';
 import { CustomModal } from './components/CustomModal';
 
@@ -32,6 +35,9 @@ export default function IntellsysPage() {
   const [filteredCheckIns, setFilteredCheckIns] = useState<CheckIn[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedClient, setSelectedClient] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const [sortField, setSortField] = useState<keyof CheckIn>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   
@@ -58,10 +64,11 @@ export default function IntellsysPage() {
   useEffect(() => {
     filterAndSortCheckIns();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkIns, searchTerm, sortField, sortOrder]);
+  }, [checkIns, searchTerm, selectedClient, selectedProject, selectedActivity, sortField, sortOrder]);
 
   const fetchCheckIns = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/checkins');
       const data = await response.json();
       setCheckIns(data);
@@ -72,17 +79,39 @@ export default function IntellsysPage() {
     }
   };
 
+  const handleRefresh = () => {
+    fetchCheckIns();
+  };
+
   const filterAndSortCheckIns = () => {
     let filtered = checkIns;
 
     if (searchTerm) {
-      filtered = checkIns.filter(
+      filtered = filtered.filter(
         (checkIn) =>
           checkIn.empId.toLowerCase().includes(searchTerm.toLowerCase()) ||
           checkIn.empName.toLowerCase().includes(searchTerm.toLowerCase()) ||
           checkIn.empMobileNo.includes(searchTerm) ||
           checkIn.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
           checkIn.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedClient) {
+      filtered = filtered.filter(
+        (checkIn) => checkIn.clientName === selectedClient
+      );
+    }
+
+    if (selectedProject) {
+      filtered = filtered.filter(
+        (checkIn) => checkIn.projectName === selectedProject
+      );
+    }
+
+    if (selectedActivity) {
+      filtered = filtered.filter(
+        (checkIn) => checkIn.activityName === selectedActivity
       );
     }
 
@@ -251,19 +280,19 @@ export default function IntellsysPage() {
   const rows = filteredCheckIns.map((checkIn) => ({
     key: `row-${checkIn.id}`,
     cells: [
-      { key: checkIn.srNo, content: checkIn.srNo },
-      { key: checkIn.empId, content: checkIn.empId },
-      { key: checkIn.empName, content: checkIn.empName },
-      { key: checkIn.empMobileNo, content: checkIn.empMobileNo },
-      { key: checkIn.department, content: checkIn.department },
-      { key: checkIn.location, content: checkIn.location },
-      { key: checkIn.kidsBelow3Feet, content: checkIn.kidsBelow3Feet },
-      { key: checkIn.membersAbove3Feet, content: checkIn.membersAbove3Feet },
+      { key: `srNo-${checkIn.id}`, content: checkIn.srNo },
+      { key: `empId-${checkIn.id}`, content: checkIn.empId },
+      { key: `empName-${checkIn.id}`, content: checkIn.empName },
+      { key: `empMobileNo-${checkIn.id}`, content: checkIn.empMobileNo },
+      { key: `department-${checkIn.id}`, content: checkIn.department },
+      { key: `location-${checkIn.id}`, content: checkIn.location },
+      { key: `kidsBelow3Feet-${checkIn.id}`, content: checkIn.kidsBelow3Feet },
+      { key: `membersAbove3Feet-${checkIn.id}`, content: checkIn.membersAbove3Feet },
       { key: `client-${checkIn.id}`, content: checkIn.clientName || '-' },
       { key: `project-${checkIn.id}`, content: checkIn.projectName || '-' },
       { key: `activity-${checkIn.id}`, content: checkIn.activityName || '-' },
       {
-        key: 'actions',
+        key: `actions-${checkIn.id}`,
         content: (
           <div className="flex space-x-2">
             <Button
@@ -284,6 +313,24 @@ export default function IntellsysPage() {
     ],
   }));
 
+  // Get unique values for dropdowns
+  const uniqueClients = Array.from(
+    new Set(checkIns.map((c) => c.clientName).filter((name): name is string => name !== null && name !== ''))
+  ).sort();
+
+  const uniqueProjects = Array.from(
+    new Set(checkIns.map((c) => c.projectName).filter((name): name is string => name !== null && name !== ''))
+  ).sort();
+
+  const uniqueActivities = Array.from(
+    new Set(checkIns.map((c) => c.activityName).filter((name): name is string => name !== null && name !== ''))
+  ).sort();
+
+  // Calculate dashboard statistics based on filtered data
+  const totalEntries = filteredCheckIns.length;
+  const totalMembersAbove3Feet = filteredCheckIns.reduce((sum, checkIn) => sum + checkIn.membersAbove3Feet, 0);
+  const totalKidsBelow3Feet = filteredCheckIns.reduce((sum, checkIn) => sum + checkIn.kidsBelow3Feet, 0);
+
   // Don't render until authentication is checked
   if (!isAuthenticated) {
     return null;
@@ -292,30 +339,126 @@ export default function IntellsysPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="border-l-4 border-amber-500 pl-4 mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Intellsys Panel
+            </h1>
+            <p className="text-amber-600 font-medium">Check-Ins Management</p>
+          </div>
+
+          {/* Dashboard Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-amber-500 border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Entries</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{totalEntries}</p>
+                </div>
+                <div className="bg-amber-100 rounded-full p-3">
+                  <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500 border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Members Above 3ft</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{totalMembersAbove3Feet}</p>
+                </div>
+                <div className="bg-blue-100 rounded-full p-3">
+                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500 border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Kids Below 3ft</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{totalKidsBelow3Feet}</p>
+                </div>
+                <div className="bg-green-100 rounded-full p-3">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="mb-6">
-            <div className="border-l-4 border-amber-500 pl-4 mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Intellsys Panel
-              </h1>
-              <p className="text-amber-600 font-medium">Check-Ins Management</p>
-            </div>
-            
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="w-full md:w-96">
-                <TextField
-                  placeholder="Search by Employee ID, Name, Mobile, Department, or Location"
-                  value={searchTerm}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                />
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                <div className="flex-1 w-full lg:w-auto">
+                  <TextField
+                    placeholder="Search by Employee ID, Name, Mobile, Department, or Location"
+                    value={searchTerm}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                
+                <div className="w-full lg:w-48">
+                  <Select
+                    placeholder="Filter by Client"
+                    options={[
+                      { label: 'All Clients', value: null },
+                      ...uniqueClients.map((client) => ({ label: client, value: client })),
+                    ]}
+                    value={selectedClient ? { label: selectedClient, value: selectedClient } : { label: 'All Clients', value: null }}
+                    onChange={(option) => setSelectedClient(option?.value || null)}
+                  />
+                </div>
+
+                <div className="w-full lg:w-48">
+                  <Select
+                    placeholder="Filter by Project"
+                    options={[
+                      { label: 'All Projects', value: null },
+                      ...uniqueProjects.map((project) => ({ label: project, value: project })),
+                    ]}
+                    value={selectedProject ? { label: selectedProject, value: selectedProject } : { label: 'All Projects', value: null }}
+                    onChange={(option) => setSelectedProject(option?.value || null)}
+                  />
+                </div>
+
+                <div className="w-full lg:w-48">
+                  <Select
+                    placeholder="Filter by Activity"
+                    options={[
+                      { label: 'All Activities', value: null },
+                      ...uniqueActivities.map((activity) => ({ label: activity, value: activity })),
+                    ]}
+                    value={selectedActivity ? { label: selectedActivity, value: selectedActivity } : { label: 'All Activities', value: null }}
+                    onChange={(option) => setSelectedActivity(option?.value || null)}
+                  />
+                </div>
               </div>
-              
-              <div className="flex gap-2">
+
+              <div className="flex gap-2 justify-end">
+                <Button 
+                  appearance="default" 
+                  onClick={handleRefresh}
+                  iconBefore={<RefreshIcon label="refresh" />}
+                >
+                  Refresh
+                </Button>
                 <Button appearance="primary" onClick={openAddModal}>
                   Add New Check-In
                 </Button>
-                <Button appearance="default" onClick={downloadCSV}>
-                  ⬇ Download CSV
+                <Button 
+                  appearance="default" 
+                  onClick={downloadCSV}
+                  iconBefore={<DownloadIcon label="download" />}
+                >
+                  Download CSV
                 </Button>
                 <Button appearance="danger" onClick={handleLogout}>
                   Logout
