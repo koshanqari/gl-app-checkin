@@ -50,7 +50,7 @@ export default function LoginPage() {
                 <TextField
                   {...fieldProps}
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                   placeholder="Enter username"
                   autoComplete="username"
                 />
@@ -63,7 +63,7 @@ export default function LoginPage() {
                   {...fieldProps}
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   autoComplete="current-password"
                 />

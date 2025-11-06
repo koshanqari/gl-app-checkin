@@ -258,9 +258,9 @@ export default function IntellsysPage() {
       { key: checkIn.location, content: checkIn.location },
       { key: checkIn.kidsBelow3Feet, content: checkIn.kidsBelow3Feet },
       { key: checkIn.membersAbove3Feet, content: checkIn.membersAbove3Feet },
-      { key: checkIn.clientName, content: checkIn.clientName || '-' },
-      { key: checkIn.projectName, content: checkIn.projectName || '-' },
-      { key: checkIn.activityName, content: checkIn.activityName || '-' },
+      { key: `client-${checkIn.id}`, content: checkIn.clientName || '-' },
+      { key: `project-${checkIn.id}`, content: checkIn.projectName || '-' },
+      { key: `activity-${checkIn.id}`, content: checkIn.activityName || '-' },
       {
         key: 'actions',
         content: (
@@ -305,7 +305,7 @@ export default function IntellsysPage() {
                 <TextField
                   placeholder="Search by Employee ID, Name, Mobile, Department, or Location"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 />
               </div>
               
@@ -354,7 +354,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.empId || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           empId: e.target.value,
@@ -369,7 +369,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.empName || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           empName: e.target.value,
@@ -384,7 +384,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.empMobileNo || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           empMobileNo: e.target.value,
@@ -399,7 +399,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.department || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           department: e.target.value,
@@ -414,7 +414,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.location || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           location: e.target.value,
@@ -430,7 +430,7 @@ export default function IntellsysPage() {
                       {...fieldProps}
                       type="number"
                       value={String(currentCheckIn.kidsBelow3Feet || 0)}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           kidsBelow3Feet: parseInt(e.target.value) || 0,
@@ -446,7 +446,7 @@ export default function IntellsysPage() {
                       {...fieldProps}
                       type="number"
                       value={String(currentCheckIn.membersAbove3Feet || 0)}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           membersAbove3Feet: parseInt(e.target.value) || 0,
@@ -461,7 +461,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.clientName || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           clientName: e.target.value,
@@ -476,7 +476,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.projectName || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           projectName: e.target.value,
@@ -491,7 +491,7 @@ export default function IntellsysPage() {
                     <TextField
                       {...fieldProps}
                       value={currentCheckIn.activityName || ''}
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setCurrentCheckIn({
                           ...currentCheckIn,
                           activityName: e.target.value,

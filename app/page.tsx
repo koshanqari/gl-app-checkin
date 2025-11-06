@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Button from '@atlaskit/button';
 import TextField from '@atlaskit/textfield';
 import { Field } from '@atlaskit/form';
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   
   const [formData, setFormData] = useState({
@@ -100,7 +100,7 @@ export default function Home() {
                   <TextField
                     {...fieldProps}
                     value={formData.empId}
-                    onChange={(e) => handleInputChange('empId', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('empId', e.target.value)}
                     placeholder="Enter Employee ID"
                   />
                 )}
@@ -111,7 +111,7 @@ export default function Home() {
                   <TextField
                     {...fieldProps}
                     value={formData.empName}
-                    onChange={(e) => handleInputChange('empName', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('empName', e.target.value)}
                     placeholder="Enter Full Name"
                   />
                 )}
@@ -123,7 +123,7 @@ export default function Home() {
                     {...fieldProps}
                     type="tel"
                     value={formData.empMobileNo}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleInputChange('empMobileNo', e.target.value)
                     }
                     placeholder="Enter Mobile Number"
@@ -136,7 +136,7 @@ export default function Home() {
                   <TextField
                     {...fieldProps}
                     value={formData.department}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       handleInputChange('department', e.target.value)
                     }
                     placeholder="Enter Department"
@@ -149,7 +149,7 @@ export default function Home() {
                   <TextField
                     {...fieldProps}
                     value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('location', e.target.value)}
                     placeholder="Enter Location"
                   />
                 )}
@@ -234,5 +234,20 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
