@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
         empMobileNo: body.empMobileNo,
         department: body.department,
         location: body.location,
+        maritalStatus: body.maritalStatus || 'single',
         kidsBelow3Feet: body.kidsBelow3Feet || 0,
         membersAbove3Feet: body.membersAbove3Feet || 0,
         clientName: body.clientName,

@@ -16,6 +16,7 @@ function HomeContent() {
     empMobileNo: '',
     department: '',
     location: '',
+    maritalStatus: 'single' as 'single' | 'married',
     kidsBelow3Feet: 0,
     membersAbove3Feet: 0,
     clientName: searchParams.get('client') || '',
@@ -75,6 +76,7 @@ function HomeContent() {
           empMobileNo: '',
           department: '',
           location: '',
+          maritalStatus: 'single' as 'single' | 'married',
           kidsBelow3Feet: 0,
           membersAbove3Feet: 0,
           clientName: searchParams.get('client') || '',
@@ -183,7 +185,39 @@ function HomeContent() {
               </Field>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div className="mt-6">
+              <Field name="maritalStatus" label="Marital Status" isRequired>
+                {({ fieldProps }) => (
+                  <div className="flex gap-6 mt-2">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="maritalStatus"
+                        value="single"
+                        checked={formData.maritalStatus === 'single'}
+                        onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
+                        className="mr-2 h-4 w-4 text-amber-600 focus:ring-amber-500"
+                      />
+                      <span className="text-gray-700">Single</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="maritalStatus"
+                        value="married"
+                        checked={formData.maritalStatus === 'married'}
+                        onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
+                        className="mr-2 h-4 w-4 text-amber-600 focus:ring-amber-500"
+                      />
+                      <span className="text-gray-700">Married</span>
+                    </label>
+                  </div>
+                )}
+              </Field>
+            </div>
+
+            {formData.maritalStatus === 'married' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
               <div className="flex flex-col">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   No. of Kids Below 3 Feet Height
@@ -221,7 +255,9 @@ function HomeContent() {
                   >
                     -
                   </Button>
-                  <span className="text-2xl font-semibold w-16 text-center text-gray-900">
+                  <span className={`text-2xl font-semibold w-16 text-center ${
+                    formData.membersAbove3Feet > 1 ? 'text-red-600' : 'text-gray-900'
+                  }`}>
                     {formData.membersAbove3Feet}
                   </span>
                   <Button
@@ -232,8 +268,14 @@ function HomeContent() {
                     +
                   </Button>
                 </div>
+                {formData.membersAbove3Feet > 1 && (
+                  <p className="mt-2 text-sm text-red-600">
+                    Charges will apply if more than one member above 3 ft is present.
+                  </p>
+                )}
               </div>
             </div>
+            )}
 
             <div className="pt-6 flex justify-center">
               <Button

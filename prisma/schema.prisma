@@ -21,6 +21,7 @@ model CheckIn {
   empMobileNo     String
   department      String
   location        String
+  maritalStatus   String   @default("single")
   kidsBelow3Feet  Int      @default(0)
   membersAbove3Feet Int    @default(0)
   clientName      String?

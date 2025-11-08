@@ -19,6 +19,7 @@ interface CheckIn {
   empMobileNo: string;
   department: string;
   location: string;
+  maritalStatus: string;
   kidsBelow3Feet: number;
   membersAbove3Feet: number;
   clientName: string | null;
@@ -94,7 +95,8 @@ export default function IntellsysPage() {
           checkIn.empName.toLowerCase().includes(searchTerm.toLowerCase()) ||
           checkIn.empMobileNo.includes(searchTerm) ||
           checkIn.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          checkIn.location.toLowerCase().includes(searchTerm.toLowerCase())
+          checkIn.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          checkIn.maritalStatus.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -156,6 +158,7 @@ export default function IntellsysPage() {
       empMobileNo: '',
       department: '',
       location: '',
+      maritalStatus: 'single',
       kidsBelow3Feet: 0,
       membersAbove3Feet: 0,
     });
@@ -228,6 +231,7 @@ export default function IntellsysPage() {
       'Emp Mobile No',
       'Department',
       'Location',
+      'Marital Status',
       'Kids Below 3 Feet',
       'Members Above 3 Feet',
       'Client Name',
@@ -248,6 +252,7 @@ export default function IntellsysPage() {
           `"${checkIn.empMobileNo}"`,
           `"${checkIn.department}"`,
           `"${checkIn.location}"`,
+          `"${checkIn.maritalStatus}"`,
           checkIn.kidsBelow3Feet,
           checkIn.membersAbove3Feet,
           `"${checkIn.clientName || ''}"`,
@@ -285,6 +290,7 @@ export default function IntellsysPage() {
       { key: 'empMobileNo', content: 'Mobile', isSortable: true },
       { key: 'department', content: 'Department', isSortable: true },
       { key: 'location', content: 'Location', isSortable: true },
+      { key: 'maritalStatus', content: 'Marital Status', isSortable: true },
       { key: 'kidsBelow3Feet', content: 'Kids < 3ft', isSortable: true },
       { key: 'membersAbove3Feet', content: 'Members > 3ft', isSortable: true },
       { key: 'clientName', content: 'Client', isSortable: true },
@@ -314,6 +320,7 @@ export default function IntellsysPage() {
       { key: `empMobileNo-${checkIn.id}`, content: checkIn.empMobileNo },
       { key: `department-${checkIn.id}`, content: checkIn.department },
       { key: `location-${checkIn.id}`, content: checkIn.location },
+      { key: `maritalStatus-${checkIn.id}`, content: checkIn.maritalStatus },
       { key: `kidsBelow3Feet-${checkIn.id}`, content: checkIn.kidsBelow3Feet },
       { key: `membersAbove3Feet-${checkIn.id}`, content: checkIn.membersAbove3Feet },
       { key: `client-${checkIn.id}`, content: checkIn.clientName || '-' },
@@ -599,6 +606,45 @@ export default function IntellsysPage() {
                         })
                       }
                     />
+                  )}
+                </Field>
+
+                <Field name="maritalStatus" label="Marital Status" isRequired>
+                  {({ fieldProps }) => (
+                    <div className="flex gap-6 mt-2">
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="maritalStatus"
+                          value="single"
+                          checked={currentCheckIn.maritalStatus === 'single'}
+                          onChange={(e) =>
+                            setCurrentCheckIn({
+                              ...currentCheckIn,
+                              maritalStatus: e.target.value,
+                            })
+                          }
+                          className="mr-2 h-4 w-4 text-amber-600 focus:ring-amber-500"
+                        />
+                        <span className="text-gray-700">Single</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="maritalStatus"
+                          value="married"
+                          checked={currentCheckIn.maritalStatus === 'married'}
+                          onChange={(e) =>
+                            setCurrentCheckIn({
+                              ...currentCheckIn,
+                              maritalStatus: e.target.value,
+                            })
+                          }
+                          className="mr-2 h-4 w-4 text-amber-600 focus:ring-amber-500"
+                        />
+                        <span className="text-gray-700">Married</span>
+                      </label>
+                    </div>
                   )}
                 </Field>
 

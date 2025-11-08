@@ -48,6 +48,7 @@ export async function PUT(
     if (body.empMobileNo !== undefined) updateData.empMobileNo = body.empMobileNo;
     if (body.department !== undefined) updateData.department = body.department;
     if (body.location !== undefined) updateData.location = body.location;
+    if (body.maritalStatus !== undefined) updateData.maritalStatus = body.maritalStatus;
     if (body.kidsBelow3Feet !== undefined) updateData.kidsBelow3Feet = body.kidsBelow3Feet;
     if (body.membersAbove3Feet !== undefined) updateData.membersAbove3Feet = body.membersAbove3Feet;
     if (body.clientName !== undefined) updateData.clientName = body.clientName;
