@@ -26,6 +26,7 @@ function HomeContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -55,6 +56,29 @@ function HomeContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Client-side validation
+    if (!formData.empId.trim()) {
+      setSubmitMessage('Please enter Employee ID');
+      return;
+    }
+    if (!formData.empName.trim()) {
+      setSubmitMessage('Please enter Employee Name');
+      return;
+    }
+    if (!formData.empMobileNo.trim()) {
+      setSubmitMessage('Please enter Mobile Number');
+      return;
+    }
+    if (!formData.department.trim()) {
+      setSubmitMessage('Please enter Department');
+      return;
+    }
+    if (!formData.location.trim()) {
+      setSubmitMessage('Please enter Location');
+      return;
+    }
+    
     setIsSubmitting(true);
     setSubmitMessage('');
 
@@ -68,23 +92,11 @@ function HomeContent() {
       });
 
       if (response.ok) {
-        setSubmitMessage('Check-in submitted successfully!');
-        // Reset form
-        setFormData({
-          empId: '',
-          empName: '',
-          empMobileNo: '',
-          department: '',
-          location: '',
-          maritalStatus: 'single' as 'single' | 'married',
-          kidsBelow3Feet: 0,
-          membersAbove3Feet: 0,
-          clientName: searchParams.get('client') || '',
-          projectName: searchParams.get('project') || '',
-          activityName: searchParams.get('activity') || '',
-        });
+        setIsSubmitted(true);
+        setSubmitMessage('Check-In done');
       } else {
-        setSubmitMessage('Failed to submit check-in. Please try again.');
+        const errorData = await response.json().catch(() => ({}));
+        setSubmitMessage(errorData.error || 'Failed to submit check-in. Please try again.');
       }
     } catch (error) {
       console.error('Error submitting check-in:', error);
@@ -122,7 +134,34 @@ function HomeContent() {
             </h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {isSubmitted ? (
+            <div className="text-center py-12">
+              <div className="mb-6">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                  <svg
+                    className="h-8 w-8 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-semibold text-green-600 mb-2">
+                  Check-In done
+                </h3>
+                <p className="text-gray-600">
+                  Your check-in has been submitted successfully.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Field name="empId" label="Employee ID" isRequired>
                 {({ fieldProps }) => (
@@ -288,18 +327,13 @@ function HomeContent() {
               </Button>
             </div>
 
-            {submitMessage && (
-              <div
-                className={`mt-4 p-4 rounded-md ${
-                  submitMessage.includes('success')
-                    ? 'bg-green-50 text-green-800'
-                    : 'bg-red-50 text-red-800'
-                }`}
-              >
+            {submitMessage && !isSubmitted && (
+              <div className="mt-4 p-4 rounded-md bg-red-50 text-red-800">
                 {submitMessage}
               </div>
             )}
           </form>
+          )}
         </div>
       </div>
     </div>

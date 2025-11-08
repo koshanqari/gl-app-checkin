@@ -59,11 +59,26 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(checkIn, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating check-in:', error);
+    
+    // Return more specific error messages
+    let errorMessage = 'Failed to create check-in. Please try again.';
+    let statusCode = 500;
+    
+    if (error.code === 'P2002') {
+      errorMessage = 'A check-in with this serial number already exists.';
+      statusCode = 409;
+    } else if (error.meta?.target) {
+      errorMessage = `Validation error: ${error.meta.target.join(', ')} already exists.`;
+      statusCode = 400;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create check-in' },
-      { status: 500 }
+      { error: errorMessage },
+      { status: statusCode }
     );
   }
 }
