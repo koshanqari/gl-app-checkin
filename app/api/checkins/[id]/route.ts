@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = await params;
     const checkIn = await prisma.checkIn.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
     });
 
     if (!checkIn) {
@@ -38,6 +38,14 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
+    // Validate mobile number if provided
+    if (body.empMobileNo !== undefined && body.empMobileNo.length !== 10) {
+      return NextResponse.json(
+        { error: 'Mobile Number must be exactly 10 digits' },
+        { status: 400 }
+      );
+    }
+
     // If only present field is being updated, do a partial update
     const updateData: any = {};
     if (body.present !== undefined) {
@@ -51,12 +59,13 @@ export async function PUT(
     if (body.maritalStatus !== undefined) updateData.maritalStatus = body.maritalStatus;
     if (body.kidsBelow3Feet !== undefined) updateData.kidsBelow3Feet = body.kidsBelow3Feet;
     if (body.membersAbove3Feet !== undefined) updateData.membersAbove3Feet = body.membersAbove3Feet;
+    if (body.additionalMembers !== undefined) updateData.additionalMembers = body.additionalMembers;
     if (body.clientName !== undefined) updateData.clientName = body.clientName;
     if (body.projectName !== undefined) updateData.projectName = body.projectName;
     if (body.activityName !== undefined) updateData.activityName = body.activityName;
 
     const checkIn = await prisma.checkIn.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: updateData,
     });
 
@@ -78,7 +87,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await prisma.checkIn.delete({
-      where: { id: parseInt(id) },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Check-in deleted successfully' });

@@ -19,6 +19,7 @@ function HomeContent() {
     maritalStatus: 'single' as 'single' | 'married',
     kidsBelow3Feet: 0,
     membersAbove3Feet: 0,
+    additionalMembers: 0,
     clientName: searchParams.get('client') || '',
     projectName: searchParams.get('project') || '',
     activityName: searchParams.get('activity') || '',
@@ -38,16 +39,16 @@ function HomeContent() {
 
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Only allow numbers
-    const numericValue = value.replace(/\D/g, '');
+    // Only allow numbers and limit to 10 digits
+    const numericValue = value.replace(/\D/g, '').slice(0, 10);
     handleInputChange('empMobileNo', numericValue);
   };
 
-  const incrementCounter = (field: 'kidsBelow3Feet' | 'membersAbove3Feet') => {
+  const incrementCounter = (field: 'kidsBelow3Feet' | 'membersAbove3Feet' | 'additionalMembers') => {
     setFormData((prev) => ({ ...prev, [field]: prev[field] + 1 }));
   };
 
-  const decrementCounter = (field: 'kidsBelow3Feet' | 'membersAbove3Feet') => {
+  const decrementCounter = (field: 'kidsBelow3Feet' | 'membersAbove3Feet' | 'additionalMembers') => {
     setFormData((prev) => ({
       ...prev,
       [field]: Math.max(0, prev[field] - 1),
@@ -59,7 +60,7 @@ function HomeContent() {
     
     // Client-side validation
     if (!formData.empId.trim()) {
-      setSubmitMessage('Please enter Employee ID');
+      setSubmitMessage('Please enter Employee Code');
       return;
     }
     if (!formData.empName.trim()) {
@@ -70,12 +71,8 @@ function HomeContent() {
       setSubmitMessage('Please enter Mobile Number');
       return;
     }
-    if (!formData.department.trim()) {
-      setSubmitMessage('Please enter Department');
-      return;
-    }
-    if (!formData.location.trim()) {
-      setSubmitMessage('Please enter Location');
+    if (formData.empMobileNo.length !== 10) {
+      setSubmitMessage('Mobile Number must be exactly 10 digits');
       return;
     }
     
@@ -122,9 +119,14 @@ function HomeContent() {
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="mb-4 flex justify-center">
+            <div className="mb-4 flex flex-col items-center gap-4">
               <img 
-                src="https://golden-lotus-prod.b-cdn.net/homepage/clientlogos/fedx1.png" 
+                src="https://iba-consulting-prod.b-cdn.net/footer/GoldenLotus%20Logos/tatatele.png" 
+                alt="Tata Tele Logo" 
+                className="h-16 w-auto object-contain"
+              />
+              <img 
+                src="https://iba-consulting-prod.b-cdn.net/footer/GoldenLotus%20Logos/onetribe.png" 
                 alt="Golden Lotus Logo" 
                 className="h-20 w-auto object-contain"
               />
@@ -163,13 +165,13 @@ function HomeContent() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field name="empId" label="Employee ID" isRequired>
+              <Field name="empId" label="Employee Code" isRequired>
                 {({ fieldProps }) => (
                   <TextField
                     {...fieldProps}
                     value={formData.empId}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('empId', e.target.value)}
-                    placeholder="Enter Employee ID"
+                    placeholder="Enter Employee Code"
                   />
                 )}
               </Field>
@@ -192,129 +194,39 @@ function HomeContent() {
                     type="tel"
                     inputMode="numeric"
                     pattern="[0-9]*"
+                    maxLength={10}
                     value={formData.empMobileNo}
                     onChange={handleMobileChange}
-                    placeholder="Enter Mobile Number"
+                    placeholder="Enter 10-digit Mobile Number"
                   />
                 )}
               </Field>
 
-              <Field name="department" label="Department" isRequired>
-                {({ fieldProps }) => (
-                  <TextField
-                    {...fieldProps}
-                    value={formData.department}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange('department', e.target.value)
-                    }
-                    placeholder="Enter Department"
-                  />
-                )}
-              </Field>
-
-              <Field name="location" label="Location" isRequired>
-                {({ fieldProps }) => (
-                  <TextField
-                    {...fieldProps}
-                    value={formData.location}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('location', e.target.value)}
-                    placeholder="Enter Location"
-                  />
-                )}
-              </Field>
-            </div>
-
-            <div className="mt-6">
-              <Field name="maritalStatus" label="Marital Status" isRequired>
-                {({ fieldProps }) => (
-                  <div className="flex gap-6 mt-2">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="maritalStatus"
-                        value="single"
-                        checked={formData.maritalStatus === 'single'}
-                        onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-                        className="mr-2 h-4 w-4 text-amber-600 focus:ring-amber-500"
-                      />
-                      <span className="text-gray-700">Single</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="maritalStatus"
-                        value="married"
-                        checked={formData.maritalStatus === 'married'}
-                        onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-                        className="mr-2 h-4 w-4 text-amber-600 focus:ring-amber-500"
-                      />
-                      <span className="text-gray-700">Married</span>
-                    </label>
-                  </div>
-                )}
-              </Field>
-            </div>
-
-            {formData.maritalStatus === 'married' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
               <div className="flex flex-col">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  No. of Kids Below 3 Feet Height
+                  Additional Family Members
                 </label>
                 <div className="flex items-center justify-center md:justify-start space-x-4">
                   <Button
                     appearance="default"
-                    onClick={() => decrementCounter('kidsBelow3Feet')}
+                    onClick={() => decrementCounter('additionalMembers')}
                     type="button"
                   >
                     -
                   </Button>
                   <span className="text-2xl font-semibold w-16 text-center text-gray-900">
-                    {formData.kidsBelow3Feet}
+                    {formData.additionalMembers}
                   </span>
                   <Button
                     appearance="default"
-                    onClick={() => incrementCounter('kidsBelow3Feet')}
+                    onClick={() => incrementCounter('additionalMembers')}
                     type="button"
                   >
                     +
                   </Button>
                 </div>
-              </div>
-
-              <div className="flex flex-col">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  No. of Members Above 3 Feet Height
-                </label>
-                <div className="flex items-center justify-center md:justify-start space-x-4">
-                  <Button
-                    appearance="default"
-                    onClick={() => decrementCounter('membersAbove3Feet')}
-                    type="button"
-                  >
-                    -
-                  </Button>
-                  <span className={`text-2xl font-semibold w-16 text-center ${
-                    formData.membersAbove3Feet > 1 ? 'text-red-600' : 'text-gray-900'
-                  }`}>
-                    {formData.membersAbove3Feet}
-                  </span>
-                  <Button
-                    appearance="default"
-                    onClick={() => incrementCounter('membersAbove3Feet')}
-                    type="button"
-                  >
-                    +
-                  </Button>
-                </div>
-                {formData.membersAbove3Feet > 1 && (
-                  <p className="mt-2 text-sm text-red-600">
-                    Charges will apply if more than one member above 3 ft is present.
-                  </p>
-                )}
               </div>
             </div>
-            )}
 
             <div className="pt-6 flex justify-center">
               <Button

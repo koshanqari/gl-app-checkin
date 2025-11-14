@@ -21,8 +21,9 @@ export default function LoginPage() {
 
     // Simple authentication check
     if (username === 'goldenlotus' && password === 'intellsys') {
-      // Store auth token in localStorage
+      // Store auth token and username in localStorage
       localStorage.setItem('intellsys_auth', 'authenticated');
+      localStorage.setItem('intellsys_username', username);
       router.push('/intellsys');
     } else {
       setError('Invalid username or password');

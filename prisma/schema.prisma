@@ -14,8 +14,7 @@ datasource db {
 }
 
 model CheckIn {
-  id              Int      @id @default(autoincrement())
-  srNo            Int      @unique @default(autoincrement())
+  id              String   @id @default(uuid())
   empId           String
   empName         String
   empMobileNo     String
@@ -24,6 +23,7 @@ model CheckIn {
   maritalStatus   String   @default("single")
   kidsBelow3Feet  Int      @default(0)
   membersAbove3Feet Int    @default(0)
+  additionalMembers Int    @default(0)
   clientName      String?
   projectName     String?
   activityName    String?
@@ -32,4 +32,17 @@ model CheckIn {
   updatedAt       DateTime @updatedAt
 
   @@map("checkin")
+}
+
+model UserPreferences {
+  id              Int      @id @default(autoincrement())
+  username        String   @unique
+  visibleColumns  String   @default("[]")
+  selectedClient  String?
+  selectedProject String?
+  selectedActivity String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("user_preferences")
 }
